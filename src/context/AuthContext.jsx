@@ -17,21 +17,61 @@ export const AuthProvider = ({ children }) => {
   const [subscription, setSubscription] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Check if Supabase is properly configured
   useEffect(() => {
+    console.log('AuthProvider: Checking Supabase configuration...')
+    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Not set')
+    console.log('Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Not set')
+  }, [])
+
+  useEffect(() => {
+    console.log('AuthProvider: Starting initialization...')
+    
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { user } } = await auth.getCurrentUser()
-      if (user) {
-        setUser(user)
-        await loadUserData(user.id)
+      try {
+        console.log('AuthProvider: Getting current user...')
+        const { data: { user }, error } = await auth.getCurrentUser()
+        console.log('AuthProvider: getCurrentUser result:', { user: !!user, error })
+        
+        if (error) {
+          console.error('Error getting current user:', error)
+          setLoading(false)
+          return
+        }
+        
+        if (user) {
+          console.log('AuthProvider: User found, loading data...')
+          setUser(user)
+          await loadUserData(user.id)
+        } else {
+          console.log('AuthProvider: No user found')
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error)
+      } finally {
+        console.log('AuthProvider: Setting loading to false')
+        setLoading(false)
       }
-      setLoading(false)
     }
 
-    getInitialSession()
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('Auth initialization timeout - forcing loading to false')
+      setLoading(false)
+    }, 3000) // Reduced to 3 seconds for faster debugging
+
+    // Start initialization
+    getInitialSession().catch(error => {
+      console.error('getInitialSession failed:', error)
+      setLoading(false)
+    })
 
     // Listen for auth changes
+    console.log('AuthProvider: Setting up auth state listener...')
     const { data: { subscription } } = auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email)
+      
       if (session?.user) {
         setUser(session.user)
         await loadUserData(session.user.id)
@@ -44,22 +84,32 @@ export const AuthProvider = ({ children }) => {
     })
 
     return () => {
+      console.log('AuthProvider: Cleaning up...')
+      clearTimeout(timeoutId)
       subscription?.unsubscribe()
     }
   }, [])
 
   const loadUserData = async (userId) => {
     try {
+      console.log('Loading user data for:', userId)
+      
       // Load profile
-      const { data: profileData } = await db.getProfile(userId)
-      if (profileData) {
+      const { data: profileData, error: profileError } = await db.getProfile(userId)
+      if (profileError) {
+        console.error('Error loading profile:', profileError)
+      } else if (profileData) {
         setProfile(profileData)
+        console.log('Profile loaded:', profileData)
       }
 
       // Load subscription
-      const { data: subscriptionData } = await db.getSubscription(userId)
-      if (subscriptionData) {
+      const { data: subscriptionData, error: subscriptionError } = await db.getSubscription(userId)
+      if (subscriptionError) {
+        console.error('Error loading subscription:', subscriptionError)
+      } else if (subscriptionData) {
         setSubscription(subscriptionData)
+        console.log('Subscription loaded:', subscriptionData)
       }
     } catch (error) {
       console.error('Error loading user data:', error)
@@ -146,6 +196,11 @@ export const AuthProvider = ({ children }) => {
   const hasAccess = (contentType) => {
     if (!subscription || !subscription.active) return false
     
+    // If it's a trial subscription, give access to everything
+    if (subscription.is_trial) {
+      return true
+    }
+    
     const plan = subscription.subscription_plans
     if (!plan) return false
 
@@ -163,6 +218,15 @@ export const AuthProvider = ({ children }) => {
     return profile?.role === 'admin'
   }
 
+  const isTrialValid = () => {
+    if (!subscription || !subscription.is_trial) return false
+    
+    const now = new Date()
+    const expiresAt = new Date(subscription.expires_at)
+    
+    return now < expiresAt
+  }
+
   const value = {
     user,
     profile,
@@ -175,6 +239,7 @@ export const AuthProvider = ({ children }) => {
     subscribe,
     hasAccess,
     isAdmin,
+    isTrialValid,
     loadUserData
   }
 

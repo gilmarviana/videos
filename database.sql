@@ -42,6 +42,7 @@ CREATE TABLE public.subscriptions (
     active BOOLEAN DEFAULT true,
     started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     expires_at TIMESTAMP WITH TIME ZONE,
+    is_trial BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

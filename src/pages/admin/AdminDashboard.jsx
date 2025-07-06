@@ -222,7 +222,7 @@ const AdminDashboard = () => {
             <button
               onClick={() => setActiveTab('overview')}
               className={`w-full text-left px-4 py-3 rounded transition-colors flex items-center space-x-3 ${
-                activeTab === 'overview' ? 'bg-netflix-red' : 'hover:bg-netflix-mediumGray'
+                activeTab === 'overview' ? 'bg-red-600' : 'hover:bg-gray-700'
               }`}
             >
               <ChartBarIcon className="w-5 h-5" />
@@ -231,7 +231,7 @@ const AdminDashboard = () => {
             <button
               onClick={() => setActiveTab('videos')}
               className={`w-full text-left px-4 py-3 rounded transition-colors flex items-center space-x-3 ${
-                activeTab === 'videos' ? 'bg-netflix-red' : 'hover:bg-netflix-mediumGray'
+                activeTab === 'videos' ? 'bg-red-600' : 'hover:bg-gray-700'
               }`}
             >
               <FilmIcon className="w-5 h-5" />
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
             <button
               onClick={() => setActiveTab('categories')}
               className={`w-full text-left px-4 py-3 rounded transition-colors flex items-center space-x-3 ${
-                activeTab === 'categories' ? 'bg-netflix-red' : 'hover:bg-netflix-mediumGray'
+                activeTab === 'categories' ? 'bg-red-600' : 'hover:bg-gray-700'
               }`}
             >
               <FilmIcon className="w-5 h-5" />
@@ -249,7 +249,7 @@ const AdminDashboard = () => {
             <button
               onClick={() => setActiveTab('users')}
               className={`w-full text-left px-4 py-3 rounded transition-colors flex items-center space-x-3 ${
-                activeTab === 'users' ? 'bg-netflix-red' : 'hover:bg-netflix-mediumGray'
+                activeTab === 'users' ? 'bg-red-600' : 'hover:bg-gray-700'
               }`}
             >
               <UsersIcon className="w-5 h-5" />

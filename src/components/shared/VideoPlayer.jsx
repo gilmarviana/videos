@@ -202,10 +202,10 @@ const VideoPlayer = ({ video, onClose }) => {
             onClick={handleSeek}
           >
             <div 
-              className="h-full bg-netflix-red rounded-full relative"
+              className="h-full bg-red-600 rounded-full relative"
               style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
             >
-              <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-netflix-red rounded-full"></div>
+              <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-600 rounded-full"></div>
             </div>
           </div>
 

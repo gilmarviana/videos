@@ -16,6 +16,7 @@ const Register = () => {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showFreeTrial, setShowFreeTrial] = useState(false)
   const { signUp } = useAuth()
   const navigate = useNavigate()
 
@@ -54,22 +55,41 @@ const Register = () => {
       return
     }
 
-    if (!selectedPlan) {
-      setError('Selecione um plano de assinatura')
+    if (!selectedPlan && !showFreeTrial) {
+      setError('Selecione um plano de assinatura ou inicie com o período gratuito')
       setLoading(false)
       return
     }
 
     try {
-      const { error } = await signUp(formData.email, formData.password, {
+      const { data, error } = await signUp(formData.email, formData.password, {
         full_name: formData.fullName
       })
       
       if (error) {
         setError(error.message)
       } else {
-        // Registration successful, redirect to subscription confirmation
-        navigate('/subscription-success')
+        // Create free trial subscription if selected
+        if (showFreeTrial && data?.user) {
+          const trialEndDate = new Date()
+          trialEndDate.setDate(trialEndDate.getDate() + 3) // 3 days from now
+          
+          const { error: subscriptionError } = await db.createSubscription({
+            user_id: data.user.id,
+            plan_id: null, // No specific plan for trial
+            active: true,
+            started_at: new Date().toISOString(),
+            expires_at: trialEndDate.toISOString(),
+            is_trial: true
+          })
+          
+          if (subscriptionError) {
+            console.error('Error creating trial subscription:', subscriptionError)
+          }
+        }
+        
+        // Registration successful, redirect to dashboard
+        navigate('/dashboard')
       }
     } catch (err) {
       setError('Erro inesperado. Tente novamente.')
@@ -176,16 +196,58 @@ const Register = () => {
                 </button>
               </div>
 
-              {/* Subscription Plans */}
+              {/* Free Trial Option */}
               <div className="space-y-3">
                 <label className="text-white font-medium">Escolha seu plano:</label>
+                
+                {/* Free Trial Option */}
+                <label
+                  className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    showFreeTrial
+                      ? 'border-green-500 bg-green-500 bg-opacity-20'
+                      : 'border-gray-600 bg-gray-700 bg-opacity-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="subscriptionOption"
+                    checked={showFreeTrial}
+                    onChange={() => {
+                      setShowFreeTrial(true)
+                      setSelectedPlan('')
+                    }}
+                    className="mr-3"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-white font-bold">🎁 Iniciar com 3 dias grátis</h3>
+                      <span className="text-green-400 font-bold">
+                        GRÁTIS
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Experimente todos os recursos por 3 dias sem compromisso
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-400">
+                      <span>✓ Acesso completo</span>
+                      <span>✓ Conteúdo VIP</span>
+                      <span>✓ Cancele quando quiser</span>
+                    </div>
+                  </div>
+                </label>
+
+                <div className="text-center text-gray-400 text-sm">
+                  <span>ou escolha um plano:</span>
+                </div>
                 {subscriptionPlans.map((plan) => (
                   <label
                     key={plan.id}
                     className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
                       selectedPlan === plan.id
-                        ? 'border-netflix-red bg-netflix-red bg-opacity-20'
-                        : 'border-netflix-mediumGray bg-netflix-mediumGray bg-opacity-50'
+                        ? 'border-red-600 bg-red-600 bg-opacity-20'
+                        : showFreeTrial
+                        ? 'border-gray-500 bg-gray-600 bg-opacity-30 opacity-50'
+                        : 'border-gray-700 bg-gray-700 bg-opacity-50'
                     }`}
                   >
                     <input
@@ -193,7 +255,11 @@ const Register = () => {
                       name="subscriptionPlan"
                       value={plan.id}
                       checked={selectedPlan === plan.id}
-                      onChange={(e) => setSelectedPlan(e.target.value)}
+                      onChange={(e) => {
+                        setSelectedPlan(e.target.value)
+                        setShowFreeTrial(false)
+                      }}
+                      disabled={showFreeTrial}
                       className="mr-3"
                     />
                     <div className="flex-1">

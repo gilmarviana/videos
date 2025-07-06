@@ -1,9 +1,47 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Validate URL before creating client
+const isValidUrl = (url) => {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Use a mock client if environment variables are not set
+const createMockClient = () => {
+  console.warn('Supabase environment variables not found. Using mock client.')
+  return {
+    auth: {
+      signUp: async () => ({ data: null, error: { message: 'Mock: Sign up not available' } }),
+      signInWithPassword: async () => ({ data: null, error: { message: 'Mock: Sign in not available' } }),
+      signOut: async () => ({ error: null }),
+      getUser: async () => ({ data: { user: null }, error: null }),
+      onAuthStateChange: (callback) => {
+        // Mock auth state change
+        callback('SIGNED_OUT', null)
+        return { data: { subscription: { unsubscribe: () => {} } } }
+      }
+    },
+    from: () => ({
+      select: () => ({ eq: () => ({ single: async () => ({ data: null, error: { message: 'Mock: Database not available' } }) }) }),
+      insert: () => ({ select: async () => ({ data: null, error: { message: 'Mock: Database not available' } }) }),
+      update: () => ({ eq: () => ({ select: async () => ({ data: null, error: { message: 'Mock: Database not available' } }) }) }),
+      delete: () => ({ eq: async () => ({ data: null, error: { message: 'Mock: Database not available' } }) }),
+      upsert: async () => ({ data: null, error: { message: 'Mock: Database not available' } }),
+      order: () => ({ limit: async () => ({ data: [], error: null }) })
+    })
+  }
+}
+
+export const supabase = isValidUrl(supabaseUrl) && supabaseAnonKey !== 'your-anon-key' 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createMockClient()
 
 // Auth functions
 export const auth = {
@@ -31,8 +69,24 @@ export const auth = {
     return { error }
   },
 
-  getCurrentUser: () => {
-    return supabase.auth.getUser()
+  getCurrentUser: async () => {
+    try {
+      console.log('getCurrentUser: Starting...')
+      
+      // Use getSession which is more reliable for session restoration
+      const { data: { session }, error } = await supabase.auth.getSession()
+      console.log('getCurrentUser: Session result:', { hasSession: !!session, hasUser: !!session?.user, error })
+      
+      if (error) {
+        console.error('Error getting session:', error)
+        return { data: { user: null }, error }
+      }
+      
+      return { data: { user: session?.user || null }, error: null }
+    } catch (error) {
+      console.error('Error in getCurrentUser:', error)
+      return { data: { user: null }, error }
+    }
   },
 
   onAuthStateChange: (callback) => {
@@ -84,6 +138,8 @@ export const db = {
       .select('*, subscription_plans(*)')
       .eq('user_id', userId)
       .eq('active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .single()
     return { data, error }
   },

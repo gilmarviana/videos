@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --color-netflix-red: #E50914;
+  --color-netflix-black: #000000;
+  --color-netflix-darkGray: #141414;
+  --color-netflix-mediumGray: #2F2F2F;
+  --color-netflix-lightGray: #B3B3B3;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #000000;
+    color: white;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    background-color: var(--color-netflix-red);
+    color: white;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+  }
+
+  .btn-primary:hover {
+    background-color: #dc2626;
+  }
+
+  .btn-secondary {
+    background-color: var(--color-netflix-mediumGray);
+    color: white;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background-color: #4b5563;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-netflix-mediumGray);
+    color: white;
+    border: 1px solid #4b5563;
+    border-radius: 0.25rem;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--color-netflix-red);
+  }
+
+  .card {
+    background-color: var(--color-netflix-darkGray);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+  }
+
+  .video-card {
+    position: relative;
+    cursor: pointer;
+    transform: transition-transform 0.3s;
+  }
+
+  .video-card:hover {
+    transform: scale(1.05);
+  }
+
+  .video-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.375rem;
+  }
+
+  .video-card .overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-card:hover .overlay {
+    opacity: 1;
+  }
+}
