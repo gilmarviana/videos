@@ -1,99 +1,62 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
-    const serverSelect = document.getElementById('server');
+    const serverSelect = document.getElementById('serverSelect');
     const customServerGroup = document.getElementById('customServerGroup');
-    const errorMessage = document.getElementById('errorMessage');
-    const loadingMessage = document.getElementById('loadingMessage');
-    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
 
     // Mostrar/ocultar campo de servidor customizado
     serverSelect.addEventListener('change', function() {
-        if (this.value === 'outro') {
+        if (serverSelect.value === 'outro') {
             customServerGroup.style.display = 'block';
-            customServerGroup.querySelector('input').required = true;
         } else {
             customServerGroup.style.display = 'none';
-            customServerGroup.querySelector('input').required = false;
-            customServerGroup.querySelector('input').value = '';
         }
     });
 
     // Manipular envio do formulário
-    loginForm.addEventListener('submit', async function(e) {
+    loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Limpar mensagens anteriores
-        hideMessages();
-        
-        // Mostrar loading
-        showLoading();
-        
-        // Coletar dados do formulário
-        const formData = new FormData(this);
-        const data = {
-            username: formData.get('username'),
-            password: formData.get('password'),
-            server: formData.get('server'),
-            customServer: formData.get('customServer')
-        };
-
-        try {
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                // Login bem-sucedido
-                showSuccess('Login realizado com sucesso! Redirecionando...');
-                setTimeout(() => {
-                    window.location.href = '/dashboard';
-                }, 1500);
-            } else {
-                // Erro no login
-                showError(result.error || 'Erro ao fazer login');
-            }
-        } catch (error) {
-            console.error('Erro na requisição:', error);
-            showError('Erro de conexão. Tente novamente.');
-        } finally {
-            hideLoading();
+        loginError.style.display = 'none';
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        let servidor = '';
+        switch(serverSelect.value) {
+            case 'premium':
+                servidor = 'zed5.top';
+                break;
+            case 'superpremium':
+                servidor = 'voando66483.click';
+                break;
+            case 'padrao1':
+                servidor = 'nplaylunar.shop';
+                break;
+            case 'padrao2':
+                servidor = 'nplaysolar.shop';
+                break;
+            case 'outro':
+                const custom = document.getElementById('customServer').value.trim();
+                if (!custom) {
+                    loginError.textContent = 'Digite o endereço do servidor.';
+                    loginError.style.display = 'block';
+                    return;
+                }
+                servidor = custom;
+                break;
         }
+        if (!username || !password || !servidor) {
+            loginError.textContent = 'Preencha todos os campos.';
+            loginError.style.display = 'block';
+            return;
+        }
+        // Monta a URL M3U
+        const m3uUrl = `http://${servidor}/get.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&type=m3u_plus&output=mpegts`;
+        // Salva no localStorage para uso no dashboard
+        localStorage.setItem('m3uUrl', m3uUrl);
+        localStorage.setItem('username', username);
+        localStorage.setItem('servidor', servidor);
+        // Redireciona para o dashboard
+        window.location.href = 'dashboard.html';
     });
-
-    function showLoading() {
-        loadingMessage.style.display = 'block';
-        loginBtn.disabled = true;
-    }
-
-    function hideLoading() {
-        loadingMessage.style.display = 'none';
-        loginBtn.disabled = false;
-    }
-
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-        errorMessage.className = 'error-message';
-    }
-
-    function showSuccess(message) {
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-        errorMessage.className = 'success-message';
-        errorMessage.style.background = '#d4edda';
-        errorMessage.style.color = '#155724';
-        errorMessage.style.borderLeftColor = '#28a745';
-    }
-
-    function hideMessages() {
-        errorMessage.style.display = 'none';
-    }
 
     // Animação adicional para os inputs
     const inputs = document.querySelectorAll('input, select');

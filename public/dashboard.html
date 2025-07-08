@@ -104,6 +104,12 @@
         </div>
     </div>
 
+    <script>
+        // Redireciona para login se não estiver autenticado
+        if (!localStorage.getItem('m3uUrl')) {
+            window.location.href = 'login.html';
+        }
+    </script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

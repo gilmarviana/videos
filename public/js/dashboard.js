@@ -28,33 +28,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadUserInfo() {
-        try {
-            const response = await fetch('/user');
-            if (response.ok) {
-                const user = await response.json();
-                userInfo.textContent = `Usuário: ${user.username} | Servidor: ${user.server}`;
-            } else {
-                window.location.href = '/';
-            }
-        } catch (error) {
-            console.error('Erro ao carregar informações do usuário:', error);
-            window.location.href = '/';
+        // Carrega usuário e servidor do localStorage
+        const username = localStorage.getItem('username');
+        const servidor = localStorage.getItem('servidor');
+        if (username && servidor) {
+            userInfo.textContent = `Usuário: ${username} | Servidor: ${servidor}`;
+        } else {
+            window.location.href = 'login.html';
         }
     }
 
     async function loadContent() {
         try {
             showLoading();
-            
-            const response = await fetch('/playlist');
-            if (!response.ok) {
-                throw new Error('Erro ao carregar playlist');
-            }
-
+            // Busca a URL M3U do localStorage
+            const m3uUrl = localStorage.getItem('m3uUrl');
+            if (!m3uUrl) throw new Error('URL M3U não encontrada');
+            const response = await fetch(m3uUrl);
+            if (!response.ok) throw new Error('Erro ao carregar playlist');
             const playlistText = await response.text();
             allChannels = parseM3U(playlistText);
             filteredChannels = [...allChannels];
-            
             renderChannels();
             hideLoading();
         } catch (error) {
@@ -173,13 +167,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setupEventListeners() {
         // Logout
-        logoutBtn.addEventListener('click', async function() {
-            try {
-                await fetch('/logout', { method: 'POST' });
-                window.location.href = '/';
-            } catch (error) {
-                console.error('Erro ao fazer logout:', error);
-            }
+        logoutBtn.addEventListener('click', function() {
+            localStorage.clear();
+            window.location.href = 'login.html';
         });
 
         // Busca
