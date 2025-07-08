@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming Platform - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-play-circle"></i>
+                <h1>Streaming Platform</h1>
+                <p>Entre para acessar o melhor conteúdo</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Usuário
+                    </label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Senha
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="server">
+                        <i class="fas fa-server"></i>
+                        Servidor
+                    </label>
+                    <select id="server" name="server" required>
+                        <option value="">Selecione um servidor</option>
+                        <option value="premium">Premium</option>
+                        <option value="super-premium">Super Premium</option>
+                        <option value="padrao-1">Padrão 1</option>
+                        <option value="padrao-2">Padrão 2</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group custom-server-group" id="customServerGroup" style="display: none;">
+                    <label for="customServer">
+                        <i class="fas fa-globe"></i>
+                        URL do Servidor
+                    </label>
+                    <div class="custom-server-input">
+                        <span class="url-prefix">http://</span>
+                        <input type="text" id="customServer" name="customServer" placeholder="exemplo.com">
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar
+                </button>
+            </form>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="loadingMessage" class="loading-message" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                Conectando...
+            </div>
+        </div>
+    </div>
+
+    <div class="background-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>
