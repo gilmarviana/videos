@@ -3,113 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Platform - Dashboard</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 </head>
-<body class="dashboard-page">
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-play-circle"></i>
-                <span>Streaming Platform</span>
+<body class="dashboard-page dark-theme">
+    <header id="globalHeader" style="position:fixed;top:0;left:0;width:100vw;height:56px;background:#18181c;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 32px;box-shadow:0 2px 8px #0002;">
+        <div style="display:flex;align-items:center;gap:24px;">
+            <div class="header-logo">
+                <img src="https://triadeiptv.com.br/wp-content/uploads/2023/05/logo.png" alt="Tríade IPTV" style="height:40px;width:auto;">
             </div>
-            <div class="user-info">
-                <span id="userInfo">Carregando...</span>
-                <button id="logoutBtn" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sair
-                </button>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+                <span id="headerUser" style="color:#fff;font-weight:600;font-size:1.1rem;"></span>
+                <span id="headerServer" style="color:#6c63ff;font-size:0.9rem;"></span>
             </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+            <form id="globalSearchForm" style="display:flex;align-items:center;gap:8px;">
+                <input id="globalSearchInput" type="text" placeholder="Pesquisar globalmente..." style="padding:8px 16px;border-radius:6px;border:none;font-size:1rem;width:320px;outline:none;" />
+                <button type="submit" style="background:#6c63ff;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;">Buscar</button>
+            </form>
+            <button id="headerLogoutBtn" onclick="confirmarLogout()" style="background:#dc3545;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s ease;">
+                <i class="fas fa-sign-out-alt" style="font-size:0.9rem;"></i>
+                <span>Sair</span>
+            </button>
         </div>
     </header>
-
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <h3><i class="fas fa-home"></i> Início</h3>
-                    <ul>
-                        <li><a href="#" class="nav-link active" data-category="all">Todos</a></li>
-                    </ul>
-                </div>
-                <div class="nav-section">
-                    <h3><i class="fas fa-tv"></i> Canais</h3>
-                    <ul>
-                        <li><a href="#" class="nav-link" data-category="live">Canais ao Vivo</a></li>
-                        <li><a href="#" class="nav-link" data-category="news">Notícias</a></li>
-                        <li><a href="#" class="nav-link" data-category="sports">Esportes</a></li>
-                        <li><a href="#" class="nav-link" data-category="entertainment">Entretenimento</a></li>
-                    </ul>
-                </div>
-                <div class="nav-section">
-                    <h3><i class="fas fa-film"></i> Filmes & Séries</h3>
-                    <ul>
-                        <li><a href="#" class="nav-link" data-category="movies">Filmes</a></li>
-                        <li><a href="#" class="nav-link" data-category="series">Séries</a></li>
-                        <li><a href="#" class="nav-link" data-category="documentaries">Documentários</a></li>
-                    </ul>
-                </div>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <div class="search-bar">
-                <div class="search-input-group">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar canais, filmes, séries...">
-                </div>
-                <button id="refreshBtn" class="refresh-btn">
-                    <i class="fas fa-sync-alt"></i>
-                    Atualizar
-                </button>
-            </div>
-
-            <div class="content-area">
-                <div id="loadingContent" class="loading-content">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Carregando conteúdo...</p>
-                </div>
-
-                <div id="errorContent" class="error-content" style="display: none;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Erro ao carregar conteúdo</p>
-                    <button onclick="loadContent()" class="retry-btn">Tentar novamente</button>
-                </div>
-
-                <div id="channelsList" class="channels-grid" style="display: none;">
-                    <!-- Conteúdo será carregado dinamicamente -->
-                </div>
-            </div>
-        </main>
+    <div style="height:56px;"></div>
+    <div id="landing" class="landing-screen">
+      <div style="display:flex;gap:60px;width:100%;justify-content:center;align-items:center;">
+        <div class="card-categoria" onclick="startSPA('canais')" style="width:400px;height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;">
+          <i class="fas fa-tv" style="font-size:5rem;margin-bottom:24px;"></i>
+          <span style="font-size:2rem;font-weight:600;color:#bfc6d1;">Canais</span>
+        </div>
+        <div class="card-categoria" onclick="startSPA('filmes')" style="width:400px;height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;">
+          <i class="fas fa-film" style="font-size:5rem;margin-bottom:24px;"></i>
+          <span style="font-size:2rem;font-weight:600;color:#bfc6d1;">Filmes</span>
+        </div>
+        <div class="card-categoria" onclick="startSPA('series')" style="width:400px;height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;">
+          <i class="fas fa-forward" style="font-size:5rem;margin-bottom:24px;"></i>
+          <span style="font-size:2rem;font-weight:600;color:#bfc6d1;">Séries</span>
+        </div>
+      </div>
     </div>
-
-    <!-- Modal do Player -->
-    <div id="playerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="playerTitle">Player</h2>
-                <button class="close-btn" onclick="closePlayer()">
-                    <i class="fas fa-times"></i>
-                </button>
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-bars"></i>
             </div>
-            <div class="modal-body">
-                <video id="videoPlayer" controls autoplay style="width: 100%; height: 400px;">
-                    Seu navegador não suporta o elemento de vídeo.
-                </video>
-                <div class="player-info">
-                    <p id="channelInfo">Informações do canal</p>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" id="nav-home" onclick="goHome()"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                    <li><a href="#" id="nav-canais" onclick="showSection('canais')"><i class="fas fa-tv"></i> <span>Canais</span></a></li>
+                    <li><a href="#" id="nav-filmes" onclick="showSection('filmes')"><i class="fas fa-film"></i> <span>Filmes</span></a></li>
+                    <li><a href="#" id="nav-series" onclick="showSection('series')"><i class="fas fa-video"></i> <span>Séries</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="nav-logout" onclick="confirmarLogout()"><i class="fas fa-sign-out-alt"></i> <span>Sair</span></a>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <div class="content-area">
+            <header class="top-header">
+                <input type="text" id="searchInput" placeholder="Pesquisar...">
+                <span class="user-welcome">Bem vindo, <b>usuário</b></span>
+            </header>
+            <div id="section-canais" class="section">
+                <div class="canais-layout">
+                    <div class="canais-categorias" id="canaisCategorias"></div>
+                    <div class="canais-lista" id="canaisLista"></div>
+                    <div class="canais-player-epg">
+                        <div id="player_container" style="width:100%;height:340px;background:#111;"></div>
+                        <div class="player-info">
+                            <p id="channelInfo">Informações do canal</p>
+                        </div>
+                        <ul class="epg_ul" id="epgList"></ul>
+                    </div>
+                </div>
+            </div>
+            <div id="section-filmes" class="section" style="display:none">
+                <div class="filmes-layout" style="display:flex;height:calc(100vh - 60px);overflow:hidden;">
+                    <div class="filmes-categorias" id="filmesCategorias" style="width:220px;background:#1e1e23;padding:18px 0 0 0;border-right:1px solid #23232a;overflow-y:auto;height:100%;"></div>
+                    <div class="grid-cards" style="flex:1;overflow-y:auto;">
+                        <div id="filmesGrid" class="cards-container"></div>
+                        <div id="player_container_filme" style="width:100%;height:340px;background:#111;"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="section-series" class="section" style="display:none">
+                <div class="series-layout" style="display:flex;height:calc(100vh - 60px);overflow:hidden;">
+                    <div class="series-categorias" id="seriesCategorias" style="width:220px;background:#1e1e23;padding:18px 0 0 0;border-right:1px solid #23232a;overflow-y:auto;height:100%;"></div>
+                    <div class="grid-cards" style="flex:1;overflow-y:auto;">
+                        <div id="seriesGrid" class="cards-container"></div>
+                        <div id="serieInfo" style="margin:20px 0 0 0;color:#bbb"></div>
+                        <div id="player_container_serie" style="width:100%;height:340px;background:#111;"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="section-search" class="section" style="display:none">
+                <div class="search-layout" style="display:flex;height:calc(100vh - 60px);overflow:hidden;">
+                    <div class="grid-cards" style="flex:1;overflow-y:auto;">
+                        <div id="searchFilterGroup" style="display:flex;gap:12px;margin-bottom:24px;">
+                            <button class="search-filter-btn active" data-filter="todos" style="background:#6c63ff;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Todos (0)</button>
+                            <button class="search-filter-btn" data-filter="canal" style="background:#23232a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Canais (0)</button>
+                            <button class="search-filter-btn" data-filter="filme" style="background:#23232a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Filmes (0)</button>
+                            <button class="search-filter-btn" data-filter="serie" style="background:#23232a;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.2s ease;">Séries (0)</button>
+                        </div>
+                        <div id="searchResultsGrid" class="cards-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // Redireciona para login se não estiver autenticado
-        if (!localStorage.getItem('m3uUrl')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <!-- Modal do player para filmes e séries -->
+    <div id="modalPlayer" class="modal-player" style="display:none;">
+      <div class="modal-player-bg" onclick="fecharModalPlayer()"></div>
+      <div class="modal-player-content">
+        <span class="modal-close" onclick="fecharModalPlayer()">&times;</span>
+        <div id="modalPlayerTitle" style="color:#fff;font-size:1.2rem;font-weight:600;margin-bottom:12px;text-align:center;"></div>
+        <div id="modalPlayerContainer"></div>
+      </div>
+    </div>
+    
+    <!-- Modal de confirmação de logout -->
+    <div id="modalLogout" class="modal-logout" style="display:none;">
+      <div class="modal-logout-bg" onclick="fecharModalLogout()"></div>
+      <div class="modal-logout-content">
+        <div class="modal-logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3 class="modal-logout-title">Confirmar Saída</h3>
+        <p class="modal-logout-message">Tem certeza que deseja sair? Você será redirecionado para a página de login.</p>
+        <div class="modal-logout-buttons">
+          <button class="modal-logout-btn modal-logout-btn-cancel" onclick="fecharModalLogout()">Cancelar</button>
+          <button class="modal-logout-btn modal-logout-btn-confirm" onclick="confirmarLogoutExecutar()">Sair</button>
+        </div>
+      </div>
+    </div>
+    <script src="js/canais.js"></script>
+    <script src="js/filmes.js"></script>
+    <script src="js/series.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

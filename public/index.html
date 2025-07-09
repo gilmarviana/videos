@@ -3,90 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Platform - Login</title>
+    <title>Tríade IPTV - Login</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="login-page">
+    <!-- Background com gradiente animado -->
+    <div class="login-background">
+        <div class="gradient-overlay"></div>
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
     <div class="login-container">
         <div class="login-card">
+            <!-- Logo e título -->
             <div class="login-header">
-                <i class="fas fa-play-circle"></i>
-                <h1>Streaming Platform</h1>
+                <div class="logo-container">
+                    <img src="https://triadeiptv.com.br/wp-content/uploads/2023/05/logo.png" alt="Tríade IPTV" class="logo-image">
+                </div>
+                <h1>Tríade IPTV</h1>
                 <p>Entre para acessar o melhor conteúdo</p>
             </div>
 
+            <!-- Formulário de login -->
             <form id="loginForm" class="login-form">
                 <div class="form-group">
-                    <label for="username">
-                        <i class="fas fa-user"></i>
-                        Usuário
-                    </label>
-                    <input type="text" id="username" name="username" required>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                        <div class="input-line"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i>
-                        Senha
-                    </label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="passwordIcon"></i>
+                        </button>
+                        <div class="input-line"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="server">
-                        <i class="fas fa-server"></i>
-                        Servidor
-                    </label>
-                    <select id="server" name="server" required>
-                        <option value="">Selecione um servidor</option>
-                        <option value="premium">Premium</option>
-                        <option value="super-premium">Super Premium</option>
-                        <option value="padrao-1">Padrão 1</option>
-                        <option value="padrao-2">Padrão 2</option>
-                        <option value="outro">Outro</option>
-                    </select>
+                    <div class="input-container">
+                        <i class="fas fa-server input-icon"></i>
+                        <select id="server" name="server" required>
+                            <option value="">Selecione um servidor</option>
+                            <option value="premium (Concluído)">Premium (Concluído)</option>
+                            <option value="super-premium (manutenção)">Super Premium (manutenção)</option>
+                            <option value="padrao-1 (manutenção)">Padrão 1 (manutenção)</option>
+                            <option value="padrao-2 (manutenção)">Padrão 2 (manutenção)</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                        <div class="input-line"></div>
+                    </div>
                 </div>
 
                 <div class="form-group custom-server-group" id="customServerGroup" style="display: none;">
-                    <label for="customServer">
-                        <i class="fas fa-globe"></i>
-                        URL do Servidor
-                    </label>
-                    <div class="custom-server-input">
-                        <span class="url-prefix">http://</span>
-                        <input type="text" id="customServer" name="customServer" placeholder="exemplo.com">
+                    <div class="input-container">
+                        <i class="fas fa-globe input-icon"></i>
+                        <div class="custom-server-input">
+                            <span class="url-prefix">http://</span>
+                            <input type="text" id="customServer" name="customServer" placeholder="exemplo.com">
+                        </div>
+                        <div class="input-line"></div>
                     </div>
                 </div>
 
                 <button type="submit" class="login-btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Entrar
+                    <span class="btn-text">Entrar</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
                 </button>
             </form>
 
+            <!-- Mensagens de erro e loading -->
             <div id="errorMessage" class="error-message" style="display: none;"></div>
             <div id="loadingMessage" class="loading-message" style="display: none;">
-                <i class="fas fa-spinner fa-spin"></i>
-                Conectando...
+                <div class="loading-spinner"></div>
+                <span>Conectando...</span>
             </div>
         </div>
     </div>
 
-    <div class="background-animation">
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-            <div class="shape shape-4"></div>
-            <div class="shape shape-5"></div>
-        </div>
-    </div>
-
     <script src="js/login.js"></script>
-    <!-- Redireciona para login.html se acessar index.html diretamente -->
-    <script>
-        window.location.replace('login.html');
-    </script>
 </body>
 </html>
