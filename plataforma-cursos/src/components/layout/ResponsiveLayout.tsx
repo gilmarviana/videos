@@ -23,7 +23,7 @@ export function ResponsiveLayout({
   const router = useRouter();
   const pathname = usePathname();
 
-  // Detect mobile screen size
+  // Detect mobile screen size and handle orientation changes
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -31,13 +31,32 @@ export function ResponsiveLayout({
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
   }, []);
 
-  // Close mobile menu when route changes
+  // Close mobile menu when route changes or when clicking outside
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMobileMenuOpen && isMobile) {
+        const target = event.target as Element;
+        if (!target.closest('.mobile-menu') && !target.closest('.mobile-menu-button')) {
+          setIsMobileMenuOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobileMenuOpen, isMobile]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -166,27 +185,27 @@ export function ResponsiveLayout({
           </nav>
 
           {/* Mobile Navigation */}
-          <nav className="bg-white shadow-sm border-b md:hidden">
+          <nav className="bg-white shadow-sm border-b md:hidden sticky top-0 z-40">
             <div className="px-4">
               <div className="flex justify-between items-center h-16">
                 <Link href={user?.role === 'admin' ? '/admin' : '/dashboard'}>
-                  <h1 className="text-lg font-bold text-gray-900">
+                  <h1 className="text-lg font-bold text-gray-900 truncate">
                     {user?.role === 'admin' ? 'Admin' : 'Cursos'}
                   </h1>
                 </Link>
                 
                 <div className="flex items-center space-x-2">
                   {user && (
-                    <span className="text-sm text-gray-700 hidden sm:block">
+                    <span className="text-sm text-gray-700 hidden sm:block truncate max-w-24">
                       {user.name}
                     </span>
                   )}
                   <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-                    aria-expanded="false"
+                    className="mobile-menu-button touch-target rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus-visible transition-colors"
+                    aria-expanded={isMobileMenuOpen}
+                    aria-label="Toggle navigation menu"
                   >
-                    <span className="sr-only">Open main menu</span>
                     {isMobileMenuOpen ? (
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -203,17 +222,13 @@ export function ResponsiveLayout({
 
             {/* Mobile menu */}
             {isMobileMenuOpen && (
-              <div className="border-t border-gray-200">
-                <div className="pt-2 pb-3 space-y-1">
+              <div className="mobile-menu border-t border-gray-200 bg-white mobile-slide-up">
+                <div className="pt-2 pb-3 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
                   {navigationItems.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`${
-                        pathname === item.href
-                          ? 'bg-blue-50 border-blue-500 text-blue-700'
-                          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
-                      } block pl-3 pr-4 py-2 border-l-4 text-base font-medium flex items-center space-x-3`}
+                      className={`mobile-nav-item ${pathname === item.href ? 'active' : ''}`}
                     >
                       {getIcon(item.icon)}
                       <span>{item.label}</span>
@@ -222,7 +237,7 @@ export function ResponsiveLayout({
                   {user && (
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 text-base font-medium flex items-center space-x-3"
+                      className="w-full text-left mobile-nav-item"
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
@@ -238,7 +253,7 @@ export function ResponsiveLayout({
       )}
 
       {/* Main content */}
-      <main className={`${showNavigation ? 'max-w-7xl mx-auto' : ''} py-4 px-4 sm:px-6 lg:px-8`}>
+      <main className={`${showNavigation ? 'container-responsive' : 'px-4 sm:px-6 lg:px-8'} py-4 ${isMobile ? 'pb-20' : ''}`}>
         {children}
       </main>
     </div>

@@ -344,7 +344,7 @@ export class ProgressRepository {
         const moduleInfo = moduleInfoResult.rows[0];
         
         // Import and trigger webhook (async, don't wait)
-        import('../services/webhook.service').then(({ WebhookService }) => {
+        import('../../services/webhook.service').then(({ WebhookService }) => {
           const webhookService = new WebhookService();
           webhookService.triggerModuleCompleted({
             userId,

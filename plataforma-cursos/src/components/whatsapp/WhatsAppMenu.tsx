@@ -37,17 +37,17 @@ export function WhatsAppMenu({ config, onClose, onOptionSelect }: WhatsAppMenuPr
   const sortedOptions = [...config.menuOptions].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="fixed bottom-24 right-6 z-50">
+    <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50">
       <div
         ref={menuRef}
-        className="bg-white rounded-lg shadow-xl border border-gray-200 min-w-[280px] max-w-[320px] animate-in slide-in-from-bottom-2 duration-300"
+        className="bg-white rounded-lg shadow-xl border border-gray-200 w-[calc(100vw-2rem)] max-w-[320px] sm:min-w-[280px] mobile-slide-up"
       >
         {/* Header */}
-        <div className="bg-green-500 text-white p-4 rounded-t-lg">
+        <div className="bg-green-500 text-white p-3 sm:p-4 rounded-t-lg">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <WhatsAppIcon className="w-6 h-6" />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <WhatsAppIcon className="w-4 h-4 sm:w-6 sm:h-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-sm">WhatsApp</h3>
@@ -56,7 +56,7 @@ export function WhatsAppMenu({ config, onClose, onOptionSelect }: WhatsAppMenuPr
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-colors"
+              className="touch-target text-white hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
               aria-label="Close menu"
             >
               <CloseIcon className="w-5 h-5" />
@@ -66,7 +66,7 @@ export function WhatsAppMenu({ config, onClose, onOptionSelect }: WhatsAppMenuPr
 
         {/* Welcome Message */}
         {config.welcomeMessage && (
-          <div className="p-4 border-b border-gray-100">
+          <div className="p-3 sm:p-4 border-b border-gray-100">
             <p className="text-sm text-gray-600">{config.welcomeMessage}</p>
           </div>
         )}
@@ -102,12 +102,12 @@ function MenuOption({ option, onClick }: MenuOptionProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0 focus:outline-none focus:bg-gray-50"
+      className="w-full px-3 py-3 sm:px-4 text-left hover:bg-gray-50 active:bg-gray-100 transition-colors border-b border-gray-50 last:border-b-0 focus-visible touch-target"
     >
       <div className="flex items-center space-x-3">
         {option.icon && (
           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">{option.icon}</span>
+            <span className="text-base sm:text-lg">{option.icon}</span>
           </div>
         )}
         <div className="flex-1 min-w-0">
@@ -115,8 +115,8 @@ function MenuOption({ option, onClick }: MenuOptionProps) {
             {option.title}
           </h4>
           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-            {option.message.length > 60 
-              ? `${option.message.substring(0, 60)}...` 
+            {option.message.length > 50 
+              ? `${option.message.substring(0, 50)}...` 
               : option.message
             }
           </p>

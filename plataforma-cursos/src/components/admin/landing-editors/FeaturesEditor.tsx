@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FeaturesContent, FeatureItem } from '@/types';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
+import { ImageUpload } from '../ImageUpload';
 
 interface FeaturesEditorProps {
   content?: FeaturesContent;
@@ -181,17 +182,13 @@ export function FeaturesEditor({ content, onSave, previewMode }: FeaturesEditorP
                   />
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL da Imagem (opcional)
-                  </label>
-                  <input
-                    type="url"
-                    value={feature.imageUrl || ''}
-                    onChange={(e) => updateFeature(index, 'imageUrl', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://exemplo.com/imagem.jpg"
+                  <ImageUpload
+                    currentImageUrl={feature.imageUrl}
+                    onImageUpload={(url) => updateFeature(index, 'imageUrl', url)}
+                    section={`features-${index}`}
+                    label="Imagem do Recurso (opcional)"
                   />
                 </div>
               </div>

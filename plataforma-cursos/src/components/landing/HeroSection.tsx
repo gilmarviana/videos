@@ -26,40 +26,40 @@ export function HeroSection({ content }: HeroSectionProps) {
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-indigo-800/90" />
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+      <div className="relative container-responsive py-16 sm:py-24 lg:py-32">
         <div className="text-center">
           {/* Main Title */}
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
             {content.title}
           </h1>
           
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-blue-100 max-w-3xl mx-auto px-4">
             {content.subtitle}
           </p>
           
           {/* Description */}
-          <p className="text-lg mb-10 text-blue-200 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg mb-8 sm:mb-10 text-blue-200 max-w-2xl mx-auto px-4">
             {content.description}
           </p>
           
           {/* CTA Button */}
           <button
             onClick={handleCTAClick}
-            className="bg-white text-blue-600 font-semibold px-8 py-4 rounded-lg text-lg hover:bg-blue-50 transform hover:scale-105 transition-all duration-200 shadow-lg"
+            className="touch-button bg-white text-blue-600 font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-lg text-base sm:text-lg hover:bg-blue-50 active:bg-blue-100 transform hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg mx-4"
           >
             {content.buttonText}
           </button>
           
           {/* Features List */}
           {content.features && content.features.length > 0 && (
-            <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm">
+            <div className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm px-4">
               {content.features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <div key={index} className="flex items-center space-x-2 bg-white/10 rounded-full px-3 py-1 backdrop-blur-sm">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-blue-100">{feature}</span>
+                  <span className="text-blue-100 text-xs sm:text-sm">{feature}</span>
                 </div>
               ))}
             </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { HeroContent } from '@/types';
 import { HeroSection } from '@/components/landing/HeroSection';
+import { ImageUpload } from '../ImageUpload';
 
 interface HeroEditorProps {
   content?: HeroContent;
@@ -119,18 +120,12 @@ export function HeroEditor({ content, onSave, previewMode }: HeroEditorProps) {
       </div>
 
       {/* Background Image */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Imagem de Fundo (URL)
-        </label>
-        <input
-          type="url"
-          value={formData.backgroundImage || ''}
-          onChange={(e) => handleInputChange('backgroundImage', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://exemplo.com/imagem.jpg"
-        />
-      </div>
+      <ImageUpload
+        currentImageUrl={formData.backgroundImage}
+        onImageUpload={(url) => handleInputChange('backgroundImage', url)}
+        section="hero"
+        label="Imagem de Fundo"
+      />
 
       {/* Features */}
       <div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { TestimonialsContent, TestimonialItem } from '@/types';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
+import { ImageUpload } from '../ImageUpload';
 
 interface TestimonialsEditorProps {
   content?: TestimonialsContent;
@@ -144,13 +145,12 @@ export function TestimonialsEditor({ content, onSave, previewMode }: Testimonial
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Avatar (URL)</label>
-                  <input
-                    type="url"
-                    value={testimonial.avatar || ''}
-                    onChange={(e) => updateTestimonial(index, 'avatar', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <div className="md:col-span-2">
+                  <ImageUpload
+                    currentImageUrl={testimonial.avatar}
+                    onImageUpload={(url) => updateTestimonial(index, 'avatar', url)}
+                    section={`testimonials-${index}`}
+                    label="Avatar do Depoente"
                   />
                 </div>
               </div>

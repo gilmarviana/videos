@@ -24,3 +24,124 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Mobile-first responsive utilities */
+.container-responsive {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.text-responsive {
+  @apply text-sm sm:text-base lg:text-lg;
+}
+
+.heading-responsive {
+  @apply text-xl sm:text-2xl lg:text-3xl xl:text-4xl;
+}
+
+.button-responsive {
+  @apply px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base;
+}
+
+/* Touch-friendly interactive elements */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+}
+
+.touch-button {
+  @apply touch-target px-4 py-2 rounded-lg transition-all duration-200 active:scale-95;
+}
+
+/* Mobile video player optimizations */
+.video-container {
+  @apply relative w-full;
+  aspect-ratio: 16/9;
+}
+
+.video-container.mobile {
+  @apply rounded-none sm:rounded-lg;
+}
+
+.video-controls {
+  @apply flex items-center justify-between p-2 sm:p-4;
+}
+
+.video-controls.mobile {
+  @apply bg-black/80 backdrop-blur-sm;
+}
+
+/* Mobile navigation improvements */
+.mobile-nav-item {
+  @apply flex items-center space-x-3 px-4 py-3 text-base font-medium border-l-4 transition-colors;
+}
+
+.mobile-nav-item.active {
+  @apply bg-blue-50 border-blue-500 text-blue-700;
+}
+
+.mobile-nav-item:not(.active) {
+  @apply border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800;
+}
+
+/* Card responsive layouts */
+.card-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+}
+
+.card-responsive {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow;
+}
+
+/* Form responsive layouts */
+.form-responsive {
+  @apply space-y-4 sm:space-y-6;
+}
+
+.input-responsive {
+  @apply w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base;
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+  .mobile-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .mobile-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Improve touch scrolling on iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better focus states for accessibility */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}

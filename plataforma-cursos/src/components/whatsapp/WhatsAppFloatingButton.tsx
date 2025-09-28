@@ -53,13 +53,13 @@ export function WhatsAppFloatingButton({ className = '' }: WhatsAppFloatingButto
 
   return (
     <>
-      <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
+      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 ${className}`}>
         <button
           onClick={handleButtonClick}
-          className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300"
+          className="touch-target bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-full p-3 sm:p-4 shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 focus-visible"
           aria-label="Contact via WhatsApp"
         >
-          <WhatsAppIcon className="w-8 h-8" />
+          <WhatsAppIcon className="w-6 h-6 sm:w-8 sm:h-8" />
         </button>
       </div>
 
