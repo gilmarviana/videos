@@ -69,7 +69,9 @@
   - Implement user engagement metrics (watch time, completion rates)
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-- [ ] 10. Create AI-powered quiz system backend
+- [-] 10. Create AI-powered quiz system backend
+
+
 
 
   - Integrate with AI service (OpenAI/Claude) for quiz generation

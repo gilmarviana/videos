@@ -41,13 +41,21 @@ export class QuizService {
     const materials = lessonDetails.materials ? lessonDetails.materials.map((m: any) => m.name) : [];
 
     try {
-      // Generate quiz using AI with fallback
-      const questions = await aiService.generateQuizWithFallback({
-        content: `
+      // Enhanced content for AI generation including video context
+      const enhancedContent = `
 Video Title: ${lessonDetails.title}
 Description: ${lessonDetails.description}
+Module: ${lessonDetails.moduleTitle}
+Course: ${lessonDetails.courseTitle}
 ${materials.length > 0 ? `Additional Materials: ${materials.join(', ')}` : ''}
-`,
+
+Context: This is a lesson within the "${lessonDetails.moduleTitle}" module of the "${lessonDetails.courseTitle}" course. 
+Generate questions that test understanding of the specific concepts covered in this lesson.
+`;
+
+      // Generate quiz using AI with fallback
+      const questions = await aiService.generateQuizWithFallback({
+        content: enhancedContent,
         type: 'lesson',
         title: lessonDetails.title,
         questionCount: 3,
@@ -387,5 +395,145 @@ ${courseDetails.modulesData.map(module => `- ${module.title}: ${module.lessons.j
         : 0,
       questionAnalytics,
     };
+  }
+
+  async generateQuizFromVideoContent(lessonId: string, videoTranscript?: string): Promise<Quiz> {
+    // Get lesson details
+    const lessonDetails = await this.quizRepository.getLessonDetails(lessonId);
+    
+    if (!lessonDetails) {
+      throw new Error('Lesson not found');
+    }
+
+    const materials = lessonDetails.materials ? lessonDetails.materials.map((m: any) => m.name) : [];
+
+    // Enhanced content with video transcript if available
+    let content = `
+Video Title: ${lessonDetails.title}
+Description: ${lessonDetails.description}
+Module: ${lessonDetails.moduleTitle}
+Course: ${lessonDetails.courseTitle}
+${materials.length > 0 ? `Additional Materials: ${materials.join(', ')}` : ''}
+`;
+
+    if (videoTranscript) {
+      content += `\nVideo Transcript/Content:\n${videoTranscript}`;
+    }
+
+    try {
+      const questions = await aiService.generateQuizWithFallback({
+        content,
+        type: 'lesson',
+        title: lessonDetails.title,
+        questionCount: videoTranscript ? 5 : 3, // More questions if we have transcript
+      });
+
+      return this.createQuiz({
+        lessonId,
+        type: 'lesson',
+        questions,
+      });
+    } catch (error) {
+      console.error('Error generating quiz from video content:', error);
+      throw new Error('Failed to generate quiz from video content');
+    }
+  }
+
+  async bulkGenerateQuizzesForCourse(courseId: string, options: {
+    generateForLessons?: boolean;
+    generateForModules?: boolean;
+    generateForCourse?: boolean;
+    overwriteExisting?: boolean;
+  }): Promise<{
+    lessonQuizzes: Quiz[];
+    moduleQuizzes: Quiz[];
+    courseQuiz: Quiz | null;
+    errors: string[];
+  }> {
+    const results = {
+      lessonQuizzes: [] as Quiz[],
+      moduleQuizzes: [] as Quiz[],
+      courseQuiz: null as Quiz | null,
+      errors: [] as string[],
+    };
+
+    // Generate lesson quizzes
+    if (options.generateForLessons) {
+      const lessonsQuery = `
+        SELECT l.id 
+        FROM lessons l
+        JOIN modules m ON l.module_id = m.id
+        WHERE m.course_id = $1
+        ORDER BY m.order_index, l.order_index
+      `;
+      
+      const lessonsResult = await this.db.query(lessonsQuery, [courseId]);
+      
+      for (const lesson of lessonsResult.rows) {
+        try {
+          const existingQuiz = await this.getQuizByTarget(lesson.id, 'lesson');
+          
+          if (existingQuiz && !options.overwriteExisting) {
+            continue; // Skip if quiz exists and we're not overwriting
+          }
+
+          if (existingQuiz && options.overwriteExisting) {
+            await this.deleteQuiz(existingQuiz.id);
+          }
+
+          const quiz = await this.generateAndSaveQuizForLesson(lesson.id);
+          results.lessonQuizzes.push(quiz);
+        } catch (error) {
+          results.errors.push(`Failed to generate quiz for lesson ${lesson.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+    }
+
+    // Generate module quizzes
+    if (options.generateForModules) {
+      const modulesQuery = `
+        SELECT id FROM modules WHERE course_id = $1 ORDER BY order_index
+      `;
+      
+      const modulesResult = await this.db.query(modulesQuery, [courseId]);
+      
+      for (const module of modulesResult.rows) {
+        try {
+          const existingQuiz = await this.getQuizByTarget(module.id, 'module');
+          
+          if (existingQuiz && !options.overwriteExisting) {
+            continue;
+          }
+
+          if (existingQuiz && options.overwriteExisting) {
+            await this.deleteQuiz(existingQuiz.id);
+          }
+
+          const quiz = await this.generateAndSaveQuizForModule(module.id);
+          results.moduleQuizzes.push(quiz);
+        } catch (error) {
+          results.errors.push(`Failed to generate quiz for module ${module.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+    }
+
+    // Generate course quiz
+    if (options.generateForCourse) {
+      try {
+        const existingQuiz = await this.getQuizByTarget(courseId, 'course');
+        
+        if (!existingQuiz || options.overwriteExisting) {
+          if (existingQuiz && options.overwriteExisting) {
+            await this.deleteQuiz(existingQuiz.id);
+          }
+
+          results.courseQuiz = await this.generateAndSaveQuizForCourse(courseId);
+        }
+      } catch (error) {
+        results.errors.push(`Failed to generate quiz for course ${courseId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+
+    return results;
   }
 }
